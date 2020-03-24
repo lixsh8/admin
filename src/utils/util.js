@@ -1,0 +1,91 @@
+export function greeting () {
+  const time = new Date()
+  const hour = time.getHours()
+  return hour < 9 ? '早上好' : hour <= 11 ? '上午好' : hour <= 13 ? '中午好' : hour < 20 ? '下午好' : '晚上好'
+}
+
+export function welcome () {
+  const arr = ['休息一会儿吧', '准备吃什么呢?', '要不要打一把 DOTA', '我猜你可能累了']
+  const index = Math.floor(Math.random() * arr.length)
+  return arr[index]
+}
+
+export function toOptions (o) {
+  if (Array.isArray(o)) {
+    return o.map((value, index) => ({ label: value, value: index }))
+  }
+  const options = []
+  for (const key in o) {
+    if (o.hasOwnProperty(key)) {
+      options.push({ label: o[key], value: key })
+    }
+  }
+  return options
+}
+
+export const setDocumentTitle = function (title) {
+  document.title = title
+  const ua = navigator.userAgent
+  // eslint-disable-next-line
+  const regex = /\bMicroMessenger\/([\d\.]+)/
+  if (regex.test(ua) && /ip(hone|od|ad)/i.test(ua)) {
+    const i = document.createElement('iframe')
+    i.src = '/favicon.ico'
+    i.style.display = 'none'
+    i.onload = function () {
+      setTimeout(function () {
+        i.remove()
+      }, 9)
+    }
+    document.body.appendChild(i)
+  }
+}
+
+/**
+ * 触发 window.resize
+ */
+export function triggerWindowResizeEvent () {
+  const event = document.createEvent('HTMLEvents')
+  event.initEvent('resize', true, true)
+  event.eventType = 'message'
+  window.dispatchEvent(event)
+}
+
+export function handleScrollHeader (callback) {
+  let timer = 0
+
+  let beforeScrollTop = window.pageYOffset
+  callback = callback || function () {}
+  window.addEventListener(
+    'scroll',
+    event => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        let direction = 'up'
+        const afterScrollTop = window.pageYOffset
+        const delta = afterScrollTop - beforeScrollTop
+        if (delta === 0) {
+          return false
+        }
+        direction = delta > 0 ? 'down' : 'up'
+        callback(direction)
+        beforeScrollTop = afterScrollTop
+      }, 50)
+    },
+    false
+  )
+}
+
+/**
+ * Remove loading animate
+ * @param id parent element id or class
+ * @param timeout
+ */
+export function removeLoadingAnimate (id = '', timeout = 1500) {
+  if (id === '') {
+    return
+  }
+  setTimeout(() => {
+    document.body.removeChild(document.getElementById(id))
+  }, timeout)
+}

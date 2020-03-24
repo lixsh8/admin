@@ -1,0 +1,37 @@
+stages:
+  - build
+  - deploy
+
+
+build:
+  stage: build
+  script:
+    - npm install --progress=false
+    - npm run build --fix
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - dist
+
+deploy_development:
+  stage: deploy
+  script:
+    - rsync -auzv --delete dist/ $DEST_DEV --password-file=/etc/rsync_pass.txt --exclude-from=.rsyncignore
+  environment:
+    name: development
+    url: https://development.waoh.com
+  only:
+    - dev
+  tags:
+    - shell
+deploy_production:
+  stage: deploy
+  script:
+    - rsync -auzv --delete dist/ $DEST_PRO --password-file=/etc/rsync_pass.txt --exclude-from=.rsyncignore
+  environment:
+    name: production
+    url: https://production.waoh.com
+  only:
+    - master
+  tags:
+    - shell
